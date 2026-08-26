@@ -1,7 +1,6 @@
-
 const games=window.GAMES||[];
-const endpoint='https://salsa-vote-backend-dani121701-3807.vercel.app/api/votes';
-const voteKey='salsa-squad-jueguitos-vote-v2';
+const endpoint='/api/votes';
+const voteKey='salsa-squad-jueguitos-vote-v3';
 let counts={},filter='all',query='',busy=false;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const count=id=>Math.max(0,Number(counts[id]||0)||0);
@@ -24,10 +23,10 @@ function card(g){const mine=myVote()===g.id, src=image(g);return`<article class=
 function renderGames(){const list=sorted(games.filter(matches));$('#shownCount').textContent=`${list.length} juegos`;$('#gameGrid').innerHTML=list.length?list.map(card).join(''):'<div class="loading-card">No hay juegos con ese filtro.</div>'}
 function renderBoard(){const top=[...games].sort((a,b)=>count(b.id)-count(a.id)||a.name.localeCompare(b.name)).slice(0,5);$('#leaderboard').innerHTML=top.map((g,i)=>`<div class="rank"><div class="pos">#${i+1}</div><strong>${g.name}</strong><div class="votes">${count(g.id)} ${count(g.id)===1?'voto':'votos'}</div><div class="muted small">${g.fit}</div></div>`).join('');$('#metricVotes').textContent=total();$('#totalVotesLabel').textContent=`${total()} ${total()===1?'voto':'votos'}`}
 function render(){renderBoard();renderGames()}
-function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),1800)}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),2200)}
 function setLive(ok,text){$('#liveDot').classList.toggle('off',!ok);$('#liveText').textContent=text}
-async function loadVotes(silent=false){try{const r=await fetch(endpoint,{cache:'no-store'});if(r.ok)counts=await r.json();else if(r.status===404)counts={};else throw new Error('HTTP '+r.status);setLive(true,'Resultados en vivo')}catch(e){setLive(false,'Juegos visibles · votos sin conexión');if(!silent)toast('Los juegos cargaron; los votos no respondieron')}render()}
-async function change(id){if(busy)return;const old=myVote();if(old===id){toast('Ese ya es tu voto');return}busy=true;renderGames();try{if(old&&count(old)>0)await inc(old,-1);await inc(id,1);saveVote(id);await loadVotes(true);toast(old?'Voto cambiado':'Voto registrado')}catch(e){console.error(e);toast('Error de voto: '+String(e.message||e).slice(0,90));await loadVotes(true)}finally{busy=false;renderGames()}}
+async function loadVotes(silent=false){try{const r=await fetch(endpoint,{cache:'no-store'});const text=await r.text();if(r.ok)counts=text?JSON.parse(text):{};else throw new Error('HTTP '+r.status+' '+text);setLive(true,'Resultados en vivo')}catch(e){console.error(e);setLive(false,'Juegos visibles · votos sin conexión');if(!silent)toast('Los juegos cargaron; los votos no respondieron')}render()}
+async function change(id){if(busy)return;const old=myVote();if(old===id){toast('Ese ya es tu voto');return}busy=true;renderGames();try{if(old&&count(old)>0)await inc(old,-1);await inc(id,1);saveVote(id);await loadVotes(true);toast(old?'Voto cambiado':'Voto registrado')}catch(e){console.error(e);toast('Error de voto: '+String(e.message||e).slice(0,120));await loadVotes(true)}finally{busy=false;renderGames()}}
 async function inc(id,by){const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,by})});const text=await r.text();if(!r.ok)throw new Error('HTTP '+r.status+' '+text);try{return JSON.parse(text)}catch{return {success:true}}}
 $('#filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;filter=b.dataset.filter;$$('.filter').forEach(x=>x.classList.toggle('active',x===b));renderGames()});
 $('#searchInput').addEventListener('input',e=>{query=e.target.value;renderGames()});
