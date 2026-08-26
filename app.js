@@ -7,7 +7,8 @@ let counts={},filter='all',query='',busy=false;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const count=id=>Math.max(0,Number(counts[id]||0)||0);
 const total=()=>games.reduce((a,g)=>a+count(g.id),0);
-const myVote=()=>localStorage.getItem(voteKey)||'';
+const myVote=()=>{try{return localStorage.getItem(voteKey)||''}catch(e){return''}};
+const saveVote=id=>{try{localStorage.setItem(voteKey,id)}catch(e){}};
 function moneyUSD(n){if(n==null)return'—';return Number(n)===0?'Gratis':new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n))}
 function moneyMXN(n){if(n==null)return'—';return Number(n)===0?'Gratis':new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:2}).format(Number(n))}
 function reviewNum(g){const m=String(g.reviewTotal||'').match(/\d+/);return m?Number(m[0]):0}
@@ -27,7 +28,7 @@ function render(){renderBoard();renderGames()}
 function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),1800)}
 function setLive(ok,text){$('#liveDot').classList.toggle('off',!ok);$('#liveText').textContent=text}
 async function loadVotes(silent=false){try{const r=await fetch(endpoint,{cache:'no-store'});if(r.ok)counts=await r.json();else if(r.status===404)counts={};else throw new Error('HTTP '+r.status);setLive(true,'Resultados en vivo')}catch(e){setLive(false,'Juegos visibles · votos sin conexión');if(!silent)toast('Los juegos cargaron; los votos no respondieron')}render()}
-async function change(id){if(busy)return;const old=myVote();if(old===id){toast('Ese ya es tu voto');return}busy=true;renderGames();try{if(old&&count(old)>0)await inc(old,-1);await inc(id,1);localStorage.setItem(voteKey,id);await loadVotes(true);toast(old?'Voto cambiado':'Voto registrado')}catch(e){toast('No se pudo registrar el voto');await loadVotes(true)}finally{busy=false;renderGames()}}
+async function change(id){if(busy)return;const old=myVote();if(old===id){toast('Ese ya es tu voto');return}busy=true;renderGames();try{if(old&&count(old)>0)await inc(old,-1);await inc(id,1);saveVote(id);await loadVotes(true);toast(old?'Voto cambiado':'Voto registrado')}catch(e){toast('No se pudo registrar el voto');await loadVotes(true)}finally{busy=false;renderGames()}}
 async function inc(id,by){const r=await fetch(incrementEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:id,by})});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
 $('#filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;filter=b.dataset.filter;$$('.filter').forEach(x=>x.classList.toggle('active',x===b));renderGames()});
 $('#searchInput').addEventListener('input',e=>{query=e.target.value;renderGames()});
