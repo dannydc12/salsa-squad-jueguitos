@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07101f">
+  <meta name="description" content="Votación de juegos para Salsa Squad Viernes Santo">
+  <title>Salsa Squad Viernes Santo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap hero-grid">
+    <section class="hero-main">
+      <div class="eyebrow">SALSA SQUAD · VOTACIÓN ANÓNIMA</div>
+      <h1>Salsa Squad<br><span>Viernes Santo</span></h1>
+      <p class="lede">Compara los juegos del grupo, filtra por 4, 5 o 6 jugadores, revisa precios, reviews y requisitos, y vota por el que prefieras.</p>
+      <div class="pills">
+        <span class="pill">47 opciones</span><span class="pill">Steam EE. UU. + México</span><span class="pill">Reviews generales + recientes</span><span class="pill">Mods y servidores señalados</span>
+      </div>
+    </section>
+    <aside class="hero-side">
+      <div class="metric-grid">
+        <div class="metric"><div class="k">Juegos</div><div class="v" id="metricGames">47</div></div>
+        <div class="metric"><div class="k">Gratis</div><div class="v" id="metricFree">6</div></div>
+        <div class="metric"><div class="k">Budget</div><div class="v">≤ $10</div></div>
+        <div class="metric"><div class="k">Votos</div><div class="v" id="metricVotes">0</div></div>
+      </div>
+      <div class="live"><span class="live-dot" id="liveDot"></span><strong id="liveText">Cargando resultados</strong><div class="muted small">Si el sistema de votos falla, los juegos siguen visibles.</div></div>
+    </aside>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="wrap toolbar-inner">
+    <div class="filters" id="filters">
+      <button class="filter active" data-filter="all">Todos</button>
+      <button class="filter" data-filter="6">6 jugadores</button>
+      <button class="filter" data-filter="5">5 jugadores</button>
+      <button class="filter" data-filter="4">4 jugadores</button>
+      <button class="filter" data-filter="free">Gratis</button>
+      <button class="filter" data-filter="budget10">Hasta $10</button>
+      <button class="filter" data-filter="strong90">Reviews ≥ 90%</button>
+      <button class="filter" data-filter="vanilla">Vanilla</button>
+      <button class="filter" data-filter="mods">Mods / servidor</button>
+    </div>
+    <div class="search-row">
+      <input id="searchInput" class="control search" placeholder="Buscar juego, género o detalle">
+      <select id="sortSelect" class="control">
+        <option value="default">Orden recomendado</option>
+        <option value="votes">Más votados</option>
+        <option value="price">Precio menor</option>
+        <option value="review">Mejores reviews</option>
+        <option value="name">Nombre A–Z</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="section">
+    <div class="section-head"><div><h2>Ranking en vivo</h2><div class="muted small">Los 5 juegos con más votos.</div></div><div id="totalVotesLabel" class="muted">0 votos</div></div>
+    <div id="leaderboard" class="leaderboard"><div class="rank"><div class="pos">#1</div><strong>Aún sin votos</strong><div class="votes">0 votos</div></div></div>
+  </section>
+  <section class="section">
+    <div class="section-head"><div><h2>Todos los juegos</h2><div class="muted small">Cada tarjeta incluye jugadores, reviews, precios y notas.</div></div><div id="shownCount" class="muted">Cargando juegos…</div></div>
+    <div id="gameGrid" class="grid"><div class="loading-card">Cargando la lista completa…</div></div>
+    <noscript><div class="noscript">Necesitas activar JavaScript para usar los filtros y la votación. La página está pensada para abrirse desde GitHub Pages en un navegador normal.</div></noscript>
+  </section>
+  <footer class="foot">Precios y reviews recopilados para la votación del grupo y sujetos a cambios. Los precios regionales de Steam pueden cambiar independientemente entre EE. UU. y México. El monitoreo de ofertas se revisa por separado. Un navegador mantiene un voto activo y puede cambiarlo.</footer>
+</main>
+<div id="toast" class="toast"></div>
+<script src="games-1.js"></script>
+<script src="games-2.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
